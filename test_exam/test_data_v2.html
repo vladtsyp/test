@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест: Технологии анализа больших данных (Apache Spark)</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+            --error: #dc2626;
+            --error-bg: #fee2e2;
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --code-bg: #1e293b;
+            --code-text: #e2e8f0;
+            --code-keyword: #c084fc;
+            --code-string: #86efac;
+            --code-function: #60a5fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px;
+            padding: 32px;
+            margin-top: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .progress-info {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .score-badge {
+            background: var(--primary);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .question-number {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        /* Блоки кода */
+        .code-block {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 16px 20px;
+            border-radius: 10px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 16px 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border-left: 4px solid var(--primary);
+            line-height: 1.5;
+        }
+
+        .code-block .line-number {
+            color: #64748b;
+            margin-right: 12px;
+            user-select: none;
+        }
+
+        /* Таблицы */
+        .table-container {
+            background: #fffbeb;
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .table-title {
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .table-container th,
+        .table-container td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #fcd34d;
+        }
+
+        .table-container th {
+            background: #fef3c7;
+            font-weight: 600;
+            color: #78350f;
+        }
+
+        .table-container tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Варианты ответов */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .option-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 1rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #eff6ff;
+            transform: translateX(4px);
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        .option-label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            background: var(--border);
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .option-btn.correct {
+            border-color: var(--success);
+            background: var(--success-bg);
+        }
+
+        .option-btn.correct .option-label {
+            background: var(--success);
+            color: white;
+        }
+
+        .option-btn.incorrect {
+            border-color: var(--error);
+            background: var(--error-bg);
+        }
+
+        .option-btn.incorrect .option-label {
+            background: var(--error);
+            color: white;
+        }
+
+        /* Обратная связь */
+        .feedback {
+            margin-top: 24px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .feedback.show { display: block; }
+
+        .feedback.correct {
+            background: var(--success-bg);
+            border-left: 4px solid var(--success);
+        }
+
+        .feedback.incorrect {
+            background: var(--error-bg);
+            border-left: 4px solid var(--error);
+        }
+
+        .feedback-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .feedback-text {
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        .feedback-text code {
+            background: rgba(0, 0, 0, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Кнопки */
+        .next-btn {
+            margin-top: 24px;
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            transition: all 0.2s;
+        }
+
+        .next-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .next-btn.show { display: block; animation: fadeIn 0.3s ease; }
+
+        /* Экран результатов */
+        .results-screen {
+            text-align: center;
+            display: none;
+            padding: 40px 20px;
+        }
+
+        .results-screen.show { display: block; animation: fadeIn 0.5s ease; }
+
+        .results-screen h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .final-score {
+            font-size: 5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 20px 0;
+            line-height: 1;
+        }
+
+        .final-score span {
+            font-size: 2rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .result-message {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: var(--text-secondary);
+        }
+
+        .restart-btn {
+            padding: 16px 32px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .restart-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Ошибка загрузки */
+        .error-message {
+            background: var(--error-bg);
+            border: 1px solid var(--error);
+            border-radius: 10px;
+            padding: 20px;
+            color: var(--error);
+            text-align: center;
+        }
+
+        .error-message code {
+            background: rgba(220, 38, 38, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .question-text { font-size: 1.05rem; }
+            .option-btn { padding: 12px 14px; font-size: 0.95rem; }
+            .code-block { font-size: 0.8rem; padding: 12px; }
+            .final-score { font-size: 3.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Экран загрузки -->
+    <div id="loading-screen">
+        <div style="text-align: center; padding: 40px;">
+            <div style="font-size: 1.2rem; color: var(--text-secondary);">Загрузка вопросов...</div>
+        </div>
+    </div>
+
+    <!-- Экран ошибки -->
+    <div id="error-screen" style="display: none;">
+        <div class="error-message">
+            <h3>⚠ Ошибка загрузки данных</h3>
+            <p style="margin-top: 12px;">Не удалось загрузить файл <code>quiz_data.json</code></p>
+            <p style="margin-top: 12px; font-size: 0.9rem;">
+                Убедитесь, что файл <code>quiz_data.json</code> находится в той же папке, что и этот HTML-файл.<br>
+                Если вы открываете файл через <code>file://</code>, запустите локальный сервер:<br>
+                <code style="display: inline-block; margin-top: 8px; padding: 8px; background: rgba(220, 38, 38, 0.1);">python -m http.server 8000</code>
+            </p>
+        </div>
+    </div>
+
+    <!-- Экран теста -->
+    <div id="quiz-screen" style="display: none;">
+        <div class="header">
+            <div class="progress-info">Вопрос <span id="current-q">1</span> из <span id="total-q">60</span></div>
+            <div class="score-badge">✓ Счет: <span id="score">0</span></div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        
+        <div class="question-number" id="question-number">Вопрос 1</div>
+        <div class="question-text" id="question-text"></div>
+        <div id="question-media"></div>
+        
+        <div class="options-list" id="options-list"></div>
+        
+        <div class="feedback" id="feedback">
+            <div class="feedback-title" id="feedback-title"></div>
+            <div class="feedback-text" id="feedback-text"></div>
+        </div>
+        
+        <button class="next-btn" id="next-btn">Следующий вопрос →</button>
+    </div>
+
+    <!-- Экран результатов -->
+    <div class="results-screen" id="results-screen">
+        <h2>🎉 Тест завершён!</h2>
+        <p style="color: var(--text-secondary); margin-top: 10px;">Ваш итоговый результат:</p>
+        <div class="final-score">
+            <span id="final-score">0</span><span> / <span id="final-total">60</span></span>
+        </div>
+        <p class="result-message" id="result-message"></p>
+        <button class="restart-btn" id="restart-btn">Пройти тест заново</button>
+    </div>
+</div>
+
+<script>
+// ============================================
+// СОСТОЯНИЕ ПРИЛОЖЕНИЯ
+// ============================================
+let quizData = [];
+let currentQuestion = 0;
+let score = 0;
+let answered = false;
+
+// ============================================
+// ЗАГРУЗКА ДАННЫХ
+// ============================================
+async function loadData() {
+    try {
+        const response = await fetch('quiz_data_v2.json');
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = await response.json();
+        quizData = data.questions || data;
+        if (!Array.isArray(quizData)) throw new Error('Неверный формат данных');
+        
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('quiz-screen').style.display = 'block';
+        init();
+    } catch (error) {
+        console.error('Ошибка загрузки:', error);
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('error-screen').style.display = 'block';
+    }
+}
+
+// ============================================
+// ИНИЦИАЛИЗАЦИЯ
+// ============================================
+function init() {
+    document.getElementById('total-q').textContent = quizData.length;
+    document.getElementById('final-total').textContent = quizData.length;
+    renderQuestion();
+}
+
+// ============================================
+// РЕНДЕР ВОПРОСА
+// ============================================
+function renderQuestion() {
+    answered = false;
+    const q = quizData[currentQuestion];
+    
+    // Обновляем заголовки
+    document.getElementById('current-q').textContent = currentQuestion + 1;
+    document.getElementById('question-number').textContent = `Вопрос ${currentQuestion + 1}`;
+    document.getElementById('score').textContent = score;
+    document.getElementById('progress-fill').style.width = 
+        ((currentQuestion) / quizData.length * 100) + '%';
+    
+    // Текст вопроса (с переносами строк)
+    const questionText = q.question.replace(/\n/g, '<br>');
+    document.getElementById('question-text').innerHTML = questionText;
+    
+    // Медиа (код, таблицы)
+    const mediaContainer = document.getElementById('question-media');
+    mediaContainer.innerHTML = '';
+    
+    if (q.code) {
+        const codeBlock = document.createElement('div');
+        codeBlock.className = 'code-block';
+        codeBlock.textContent = q.code;
+        mediaContainer.appendChild(codeBlock);
+    }
+    
+    if (q.table) {
+        const tableContainer = document.createElement('div');
+        tableContainer.className = 'table-container';
+        
+        if (q.table.title) {
+            const title = document.createElement('div');
+            title.className = 'table-title';
+            title.textContent = q.table.title;
+            tableContainer.appendChild(title);
+        }
+        
+        if (q.table.rows && Array.isArray(q.table.rows)) {
+            const table = document.createElement('table');
+            q.table.rows.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.textContent = row;
+                tr.appendChild(td);
+                table.appendChild(tr);
+            });
+            tableContainer.appendChild(table);
+        }
+        
+        mediaContainer.appendChild(tableContainer);
+    }
+    
+    // Варианты ответов
+    const optionsList = document.getElementById('options-list');
+    optionsList.innerHTML = '';
+    
+    const labels = ['A', 'B', 'C', 'D', 'E'];
+    q.options.forEach((option, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `
+            <span class="option-label">${labels[index]}</span>
+            <span>${option}</span>
+        `;
+        btn.onclick = () => selectAnswer(index, btn);
+        optionsList.appendChild(btn);
+    });
+    
+    // Сброс обратной связи
+    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('next-btn').className = 'next-btn';
+}
+
+// ============================================
+// ВЫБОР ОТВЕТА
+// ============================================
+function selectAnswer(index, btn) {
+    if (answered) return;
+    answered = true;
+    
+    const q = quizData[currentQuestion];
+    const isCorrect = index === q.correctIndex;
+    const buttons = document.querySelectorAll('.option-btn');
+    
+    // Блокируем все кнопки и подсвечиваем правильный/неправильный
+    buttons.forEach((b, i) => {
+        b.disabled = true;
+        if (i === q.correctIndex) {
+            b.classList.add('correct');
+        } else if (i === index && !isCorrect) {
+            b.classList.add('incorrect');
+        }
+    });
+    
+    // Обновляем счёт
+    if (isCorrect) {
+        score++;
+        document.getElementById('score').textContent = score;
+        showFeedback(true, '✓ Правильно!', q.explanation);
+    } else {
+        showFeedback(false, '✗ Неправильно', q.explanation);
+    }
+    
+    // Показываем кнопку "Далее"
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.textContent = currentQuestion === quizData.length - 1 
+        ? 'Показать результат →' 
+        : 'Следующий вопрос →';
+    nextBtn.className = 'next-btn show';
+}
+
+// ============================================
+// ОБРАТНАЯ СВЯЗЬ
+// ============================================
+function showFeedback(isCorrect, title, text) {
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+    document.getElementById('feedback-title').textContent = title;
+    
+    // Форматируем объяснение (переносы строк и код)
+    let formattedText = text.replace(/\n/g, '<br>');
+    // Оборачиваем код в <code> (простая эвристика: текст в кавычках или со скобками)
+    formattedText = formattedText.replace(/`([^`]+)`/g, '<code>$1</code>');
+    
+    document.getElementById('feedback-text').innerHTML = formattedText;
+}
+
+// ============================================
+// СЛЕДУЮЩИЙ ВОПРОС
+// ============================================
+function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < quizData.length) {
+        renderQuestion();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+        showResults();
+    }
+}
+
+// ============================================
+// РЕЗУЛЬТАТЫ
+// ============================================
+function showResults() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('results-screen').className = 'results-screen show';
+    document.getElementById('final-score').textContent = score;
+    
+    const percent = Math.round(score / quizData.length * 100);
+    let msg = '';
+    let emoji = '';
+    
+    if (percent >= 90) {
+        msg = 'Отлично! Вы прекрасно знаете Spark!';
+        emoji = '';
+    } else if (percent >= 70) {
+        msg = 'Хороший результат!';
+        emoji = '👍';
+    } else if (percent >= 50) {
+        msg = 'Неплохо, но есть куда расти.';
+        emoji = '📚';
+    } else {
+        msg = 'Стоит ещё раз повторить материал.';
+        emoji = '💪';
+    }
+    
+    document.getElementById('result-message').textContent = `${emoji} ${msg} (${percent}%)`;
+}
+
+// ============================================
+// ПЕРЕЗАПУСК
+// ============================================
+function restartQuiz() {
+    currentQuestion = 0;
+    score = 0;
+    document.getElementById('results-screen').className = 'results-screen';
+    document.getElementById('quiz-screen').style.display = 'block';
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============================================
+// ОБРАБОТЧИКИ СОБЫТИЙ
+// ============================================
+document.getElementById('next-btn').addEventListener('click', nextQuestion);
+document.getElementById('restart-btn').addEventListener('click', restartQuiz);
+
+// Запуск
+loadData();
+</script>
+
+</body>
+</html>

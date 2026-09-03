@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RAG — тест</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="app">
+<header>
+  <div>
+    <div class="eyebrow">RAG · QUIZ</div>
+    <h1>Проверь знания по RAG</h1>
+    <p>Dense и sparse retrieval, BM25, hybrid search, reranking и архитектура RAG.</p>
+  </div>
+  <div class="counter" id="counter"></div>
+</header>
+<div class="progress"><div id="bar"></div></div>
+
+<section class="card" id="quiz">
+  <div class="topic" id="topic"></div>
+  <h2 id="question"></h2>
+  <div id="options" class="options"></div>
+  <div id="feedback" class="feedback" hidden>
+    <strong id="feedbackTitle"></strong>
+    <p id="feedbackText"></p>
+  </div>
+  <button id="next" class="next" disabled>Далее →</button>
+</section>
+
+<section class="card result" id="result" hidden>
+  <div class="result-icon">✓</div>
+  <div class="eyebrow">РЕЗУЛЬТАТ</div>
+  <h2 id="resultTitle"></h2>
+  <p id="resultText"></p>
+  <button id="restart" class="next">Пройти ещё раз</button>
+</section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>

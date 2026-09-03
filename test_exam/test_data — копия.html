@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест: Технологии анализа больших данных (Apache Spark)</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+            --error: #dc2626;
+            --error-bg: #fee2e2;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            padding: 32px;
+            transition: all 0.3s ease;
+        }
+
+        /* Header & Progress */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .progress-info {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .score-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* Question & Options */
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 1rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            white-space: pre-wrap;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        .option-btn.correct {
+            border-color: var(--success);
+            background: var(--success-bg);
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .option-btn.incorrect {
+            border-color: var(--error);
+            background: var(--error-bg);
+            color: var(--error);
+        }
+
+        /* Feedback & Navigation */
+        .feedback {
+            margin-top: 24px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: var(--success-bg);
+            border-left: 4px solid var(--success);
+        }
+
+        .feedback.incorrect {
+            background: var(--error-bg);
+            border-left: 4px solid var(--error);
+        }
+
+        .feedback-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .feedback-text {
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        .next-btn {
+            margin-top: 24px;
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            transition: background 0.2s;
+        }
+
+        .next-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .next-btn.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Results Screen */
+        .results-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .results-screen.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .final-score {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        .restart-btn {
+            margin-top: 24px;
+            padding: 16px 32px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .restart-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .question-text { font-size: 1.1rem; }
+            .option-btn { padding: 14px 16px; font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Quiz Screen -->
+    <div id="quiz-screen">
+        <div class="header">
+            <div class="progress-info">Вопрос <span id="current-q">1</span> из <span id="total-q">60</span></div>
+            <div class="score-badge">Счет: <span id="score">0</span></div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <div class="question-text" id="question-text"></div>
+        
+        <div class="options-list" id="options-list"></div>
+
+        <div class="feedback" id="feedback">
+            <div class="feedback-title" id="feedback-title"></div>
+            <div class="feedback-text" id="feedback-text"></div>
+        </div>
+
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Следующий вопрос →</button>
+    </div>
+
+    <!-- Results Screen -->
+    <div class="results-screen" id="results-screen">
+        <h2>Тест завершен!</h2>
+        <p style="color: var(--text-secondary); margin-top: 10px;">Ваш итоговый результат:</p>
+        <div class="final-score"><span id="final-score">0</span> / <span id="final-total">0</span></div>
+        <p id="result-message" style="font-size: 1.1rem; margin-bottom: 20px;"></p>
+        <button class="restart-btn" onclick="restartQuiz()">Пройти тест заново</button>
+    </div>
+</div>
+
+<script>
+    // Загружаем данные из JSON
+    let quizData = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    // Загрузка JSON данных
+    fetch('quiz_data.json')
+        .then(response => response.json())
+        .then(data => {
+            quizData = data;
+            document.getElementById('total-q').textContent = quizData.length;
+            document.getElementById('final-total').textContent = quizData.length;
+            loadQuestion();
+        })
+        .catch(error => {
+            console.error('Ошибка загрузки JSON:', error);
+            document.getElementById('question-text').textContent = 'Ошибка загрузки данных теста. Убедитесь, что файл quiz_data.json находится в той же папке.';
+        });
+
+    function loadQuestion() {
+        if (currentQuestionIndex >= quizData.length) {
+            showResults();
+            return;
+        }
+
+        const question = quizData[currentQuestionIndex];
+        answered = false;
+
+        // Update progress
+        document.getElementById('current-q').textContent = currentQuestionIndex + 1;
+        document.getElementById('progress-fill').style.width = ((currentQuestionIndex / quizData.length) * 100) + '%';
+
+        // Set question text
+        document.getElementById('question-text').textContent = question.question;
+
+        // Create options
+        const optionsList = document.getElementById('options-list');
+        optionsList.innerHTML = '';
+        
+        question.options.forEach((option, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = option;
+            btn.onclick = () => selectAnswer(index);
+            optionsList.appendChild(btn);
+        });
+
+        // Hide feedback and next button
+        document.getElementById('feedback').classList.remove('show');
+        document.getElementById('next-btn').classList.remove('show');
+    }
+
+    function selectAnswer(selectedIndex) {
+        if (answered) return;
+        answered = true;
+
+        const question = quizData[currentQuestionIndex];
+        const correctIndex = question.correctIndex;
+        const options = document.querySelectorAll('.option-btn');
+
+        // Disable all buttons
+        options.forEach(btn => btn.disabled = true);
+
+        // Mark correct and incorrect
+        options[correctIndex].classList.add('correct');
+        
+        if (selectedIndex === correctIndex) {
+            score++;
+            document.getElementById('score').textContent = score;
+            showFeedback(true, question.explanation);
+        } else {
+            options[selectedIndex].classList.add('incorrect');
+            showFeedback(false, question.explanation);
+        }
+
+        // Show next button
+        document.getElementById('next-btn').classList.add('show');
+    }
+
+    function showFeedback(isCorrect, explanation) {
+        const feedback = document.getElementById('feedback');
+        const feedbackTitle = document.getElementById('feedback-title');
+        const feedbackText = document.getElementById('feedback-text');
+
+        feedback.classList.remove('correct', 'incorrect');
+        feedback.classList.add('show');
+
+        if (isCorrect) {
+            feedback.classList.add('correct');
+            feedbackTitle.textContent = '✓ Правильно!';
+        } else {
+            feedback.classList.add('incorrect');
+            feedbackTitle.textContent = '✗ Неправильно';
+        }
+
+        feedbackText.textContent = explanation;
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+
+    function showResults() {
+        document.getElementById('quiz-screen').style.display = 'none';
+        document.getElementById('results-screen').classList.add('show');
+        document.getElementById('final-score').textContent = score;
+        
+        const percentage = (score / quizData.length) * 100;
+        let message = '';
+        
+        if (percentage >= 90) {
+            message = '🎉 Отличный результат! Вы прекрасно разбираетесь в Apache Spark!';
+        } else if (percentage >= 70) {
+            message = '👍 Хороший результат! Есть небольшие пробелы в знаниях.';
+        } else if (percentage >= 50) {
+            message = '📚 Удовлетворительно. Рекомендуется повторить материал.';
+        } else {
+            message = '📖 Нужно больше практики. Изучите теорию и попробуйте снова!';
+        }
+        
+        document.getElementById('result-message').textContent = message;
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        document.getElementById('score').textContent = score;
+        document.getElementById('results-screen').classList.remove('show');
+        document.getElementById('quiz-screen').style.display = 'block';
+        loadQuestion();
+    }
+</script>
+
+</body>
+</html>

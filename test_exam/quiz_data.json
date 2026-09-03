@@ -1,0 +1,782 @@
+[
+    {
+        "id": 1,
+        "question": "Какое из следующих утверждений о драйвере Spark неверно?",
+        "options": [
+            "Spark-Драйвер — это узел, в котором выполняется главный метод Spark-приложения для координации работы приложения",
+            "Spark-Драйвер горизонтально масштабируется для увеличения общей пропускной способности обработки",
+            "Spark-Драйвер содержит объект SparkContext",
+            "Spark-Драйвер отвечает за планирование выполнения данных различными рабочими узлами в кластерном режиме",
+            "Для оптимальной производительности драйвер должен располагаться как можно ближе к рабочим узлам"
+        ],
+        "correctIndex": 1,
+        "explanation": "Драйвер — единственный, неразмножаемый процесс приложения: он не масштабируется горизонтально. Горизонтально масштабируются только рабочие узлы и исполнители."
+    },
+    {
+        "id": 2,
+        "question": "Что из нижеперечисленного описывает узлы в Spark в кластерном режиме?",
+        "options": [
+            "Узлы являются самым детальным уровнем выполнения в Spark иерархии выполнения",
+            "Существует только один узел, на котором размещаются драйвер и исполнители",
+            "Узлы — это другое название исполнителей, поэтому они представляют собой экземпляры движка обработки для выполнения вычислений",
+            "Существуют узлы драйвера и рабочие узлы, оба из которых могут масштабироваться горизонтально",
+            "Рабочие узлы — это машины, на которых размещаются исполнители, отвечающие за выполнение задач"
+        ],
+        "correctIndex": 4,
+        "explanation": "Узел (node) — это физическая/виртуальная машина. Рабочие узлы хостят исполнителей. Драйвер не масштабируется горизонтально."
+    },
+    {
+        "id": 3,
+        "question": "Какое из следующих утверждений о слотах верно?",
+        "options": [
+            "Слотов должно быть больше, чем исполнителей",
+            "Должно быть больше задач, чем слотов",
+            "Слоты являются самым детальным уровнем выполнения в Spark иерархии выполнения",
+            "Слоты не используются в кластерном режиме",
+            "Слоты — это ресурсы для параллелизма внутри приложения Spark"
+        ],
+        "correctIndex": 4,
+        "explanation": "Слот — это ресурс для выполнения одной задачи параллельно (обычно равен ядру). Связи «слотов больше исполнителей» или «задач больше слотов» не являются обязательными правилами."
+    },
+    {
+        "id": 4,
+        "question": "Что из перечисленного ниже является комбинацией блока данных и набора трансформаций, которые будут выполняться на одном исполнителе?",
+        "options": [
+            "Исполнитель",
+            "Узел",
+            "Задание (Job)",
+            "Задача (Task)",
+            "Слот"
+        ],
+        "correctIndex": 3,
+        "explanation": "Задача (Task) = один раздел данных + цепочка трансформаций, выполняемая на одном исполнителе. Это самая мелкая единица выполнения."
+    },
+    {
+        "id": 5,
+        "question": "Что из нижеперечисленного представляет собой группу задач, которые могут выполняться параллельно для вычисления одного и того же набора операций на потенциально нескольких машинах?",
+        "options": [
+            "Задание (Job)",
+            "Слот",
+            "Исполнитель",
+            "Задача (Task)",
+            "Стадия (Stage)"
+        ],
+        "correctIndex": 4,
+        "explanation": "Стадия (Stage) — это набор задач, которые можно выполнять параллельно над одним и тем же набором операций (между перемешиваниями/shuffle)."
+    },
+    {
+        "id": 6,
+        "question": "Что из нижеперечисленного описывает перемешивание (shuffle)?",
+        "options": [
+            "Перемешивание — это процесс перераспределения данных между разделами",
+            "Перемешивание — это процесс перераспределения данных между исполнителями",
+            "Перемешивание — это процесс распределения разделов между задачами",
+            "Перемешивание — это процесс упорядочивания разделов для записи",
+            "Перемешивание — это процесс упорядочивания задач для выполнения"
+        ],
+        "correctIndex": 0,
+        "explanation": "Shuffle — перераспределение данных между разделами (часто с передачей по сети между исполнителями), которое требуется широким преобразованиям."
+    },
+    {
+        "id": 7,
+        "question": "DataFrame df очень большой с большим количеством разделов, больше, чем исполнителей в кластере. Исходя из этой ситуации, что из нижеперечисленного является неверным? Предположим, что на один исполнитель приходится одно ядро.",
+        "options": [
+            "Производительность будет ниже оптимальной, потому что не все исполнители будут использоваться одновременно",
+            "Производительность будет ниже оптимальной, потому что не все данные могут быть обработаны одновременно",
+            "При вызове операций, вызывающих перемешивание, на df будет выполняться большое количество соединений перемешивания",
+            "Будет много накладных расходов, связанных с управлением ресурсами для обработки данных в каждой задаче",
+            "Может возникнуть риск ошибок нехватки памяти в зависимости от размера исполнителей в кластере"
+        ],
+        "correctIndex": 0,
+        "explanation": "Когда разделов БОЛЬШЕ, чем исполнителей, все исполнители как раз будут загружены постоянно — простаивающих нет. Поэтому это утверждение ложно (искомое)."
+    },
+    {
+        "id": 8,
+        "question": "Какая из следующих операций является действием (action)?",
+        "options": [
+            "DataFrame.filter()",
+            "DataFrame.distinct()",
+            "DataFrame.intersect()",
+            "DataFrame.join()",
+            "DataFrame.count()"
+        ],
+        "correctIndex": 4,
+        "explanation": "count() запускает вычисление и возвращает значение драйверу — это действие. filter(), distinct(), intersect(), join() ленивы и возвращают новый DataFrame, то есть являются преобразованиями."
+    },
+    {
+        "id": 9,
+        "question": "Что из нижеперечисленного описывает разницу между преобразованиями (transformations) и действиями (actions)?",
+        "options": [
+            "Преобразования работают с DataFrames/Datasets, а действия предназначены для объектов нативного языка",
+            "Нет никакой разницы между действиями и преобразованиями",
+            "Действия — это операции бизнес-логики, которые не вызывают выполнения, в то время как преобразования — это триггеры выполнения, ориентированные на возвращение результатов",
+            "Действия работают с DataFrames/Datasets, а преобразования предназначены для объектов нативного языка",
+            "Преобразования — это операции бизнес-логики, которые не вызывают выполнения, в то время как действия — это триггеры выполнения, ориентированные на возвращение результатов"
+        ],
+        "correctIndex": 4,
+        "explanation": "Преобразования ленивы (строят план), действия материализуют вычисления и возвращают результат. Вариант C переставляет понятия местами, поэтому верен именно E."
+    },
+    {
+        "id": 10,
+        "question": "Какая из следующих операций с DataFrame всегда классифицируется как узкое преобразование (narrow transformation)?",
+        "options": [
+            "DataFrame.sort()",
+            "DataFrame.distinct()",
+            "DataFrame.repartition()",
+            "DataFrame.select()",
+            "DataFrame.join()"
+        ],
+        "correctIndex": 3,
+        "explanation": "select() обрабатывает каждый раздел независимо, без перемещения данных между разделами — узкое преобразование. sort(), distinct(), repartition(), join() требуют перемешивания — это широкие преобразования."
+    },
+    {
+        "id": 11,
+        "question": "Spark имеет несколько различных режимов выполнения/развертывания: кластерный, клиентский и локальный. Что из нижеперечисленного описывает режим выполнения/развертывания Spark?",
+        "options": [
+            "Режим выполнения/развертывания определяет, где физически расположены драйвер и исполнители при запуске приложения",
+            "Режим выполнения/развертывания определяет, какие задачи назначаются каким исполнителям в кластере",
+            "Режим выполнения/развертывания определяет, какой узел в кластере узлов отвечает за запуск программы-драйвера",
+            "Режим выполнения/развертывания определяет, к скольким узлам драйвер будет подключаться при запуске приложения",
+            "Режим выполнения/развертывания определяет, выполняются ли результаты интерактивно в среде блокнота или в пакетном режиме"
+        ],
+        "correctIndex": 0,
+        "explanation": "Режим развертывания (cluster/client/local) задаёт физическое расположение драйвера и исполнителей. Назначение задач исполнителям — это работа планировщика, а не режима развертывания."
+    },
+    {
+        "id": 12,
+        "question": "Какая из следующих конфигураций кластера обеспечит завершение Spark-приложения в случае отказа рабочего узла? Обратите внимание, что каждая конфигурация имеет примерно одинаковую вычислительную мощность, используя 100 ГБ оперативной памяти и 200 ядер.",
+        "options": [
+            "Сценарий №1",
+            "Все конфигурации должны обеспечивать завершение, поскольку рабочие узлы отказоустойчивы",
+            "Сценарий №4",
+            "Сценарий №5",
+            "Сценарий №6"
+        ],
+        "correctIndex": 4,
+        "explanation": "Отказоустойчивость Spark основана на пересчёте утраченных разделов по линии происхождения (lineage). Чем больше узлов, тем выше шанс, что при отказе одного оставшиеся пересчитают потерянные данные — поэтому конфигурация с 8 узлами (№6) наиболее устойчива."
+    },
+    {
+        "id": 13,
+        "question": "Что из нижеперечисленного описывает ошибки нехватки памяти (out-of-memory errors) в Spark?",
+        "options": [
+            "Ошибка нехватки памяти возникает, когда драйверу или исполнителю не хватает памяти для сбора или обработки данных, выделенных ему",
+            "Ошибка нехватки памяти возникает, когда уровень хранения слишком лоялен и позволяет кэшировать объекты данных как в памяти, так и на диске",
+            "Ошибка нехватки памяти возникает, когда задач больше, чем исполнителей, независимо от количества рабочих узлов",
+            "Ошибка нехватки памяти возникает, когда приложение вызывает слишком много преобразований подряд, не вызывая действия, независимо от размера объекта данных",
+            "Ошибка нехватки памяти возникает, когда драйверу выделено слишком много памяти для вычислительных целей"
+        ],
+        "correctIndex": 0,
+        "explanation": "Классический OOM: исполнителю не хватает памяти на раздел, или драйверу — на собранный результат (например, при collect()). Остальные варианты описывают несуществующие или искажённые механизмы."
+    },
+    {
+        "id": 14,
+        "question": "Какой из следующих уровней хранения является значением по умолчанию для persist() для не-потокового DataFrame/Dataset?",
+        "options": [
+            "MEMORY_AND_DISK (Память и диск)",
+            "MEMORY_AND_DISK_SER (Память и сериализованный на диск)",
+            "DISK_ONLY (Только диск)",
+            "MEMORY_ONLY_SER (Только память, сериализованный)",
+            "MEMORY_ONLY (Только память)"
+        ],
+        "correctIndex": 0,
+        "explanation": "Для DataFrame/Dataset (в отличие от RDD, где по умолчанию MEMORY_ONLY) и persist(), и cache() используют уровень MEMORY_AND_DISK: данные хранятся в памяти, а излишки сбрасываются на диск."
+    },
+    {
+        "id": 15,
+        "question": "Что из нижеперечисленного описывает широковещательную переменную (broadcast variable)?",
+        "options": [
+            "Широковещательная переменная — это объект, который необходимо разделить на несколько рабочих узлов, потому что он слишком большой, чтобы поместиться на одном рабочем узле",
+            "Широковещательная переменная может быть создана только явным вызовом операции broadcast()",
+            "Широковещательная переменная полностью кэшируется на узле-драйвера, поэтому ей не нужно присутствовать на каких-либо рабочих узлах",
+            "Широковещательная переменная полностью кэшируется на каждом рабочем узле, поэтому ее не нужно передавать или перемешивать между узлами на каждом этапе",
+            "Широковещательная переменная сохраняется на диске каждого рабочего узла для легкого считывания в память по мере необходимости"
+        ],
+        "correctIndex": 3,
+        "explanation": "Broadcast-переменная рассылается один раз и кэшируется целиком на каждом узле, экономя сеть. Её можно создавать и неявно (авто-broadcast при join), а не только явным broadcast() — поэтому B неверно."
+    },
+    {
+        "id": 16,
+        "question": "Какая из следующих операций с наибольшей вероятностью приведет к перекосу (skew) в размере разделов ваших данных?",
+        "options": [
+            "DataFrame.collect()",
+            "DataFrame.cache()",
+            "DataFrame.repartition(n)",
+            "DataFrame.coalesce(n)",
+            "DataFrame.persist()"
+        ],
+        "correctIndex": 3,
+        "explanation": "coalesce() уменьшает число разделов, объединяя существующие БЕЗ полного перемешивания, из-за чего размеры разделов могут стать неравномерными (skew). repartition() делает полное перемешивание и распределяет данные равномерно."
+    },
+    {
+        "id": 17,
+        "question": "На каких структурах данных построены Spark DataFrames?",
+        "options": [
+            "Массивы",
+            "Строки",
+            "RDD (Resilient Distributed Datasets — Устойчивые распределенные наборы данных)",
+            "Векторы",
+            "SQL Таблицы"
+        ],
+        "correctIndex": 2,
+        "explanation": "DataFrame — это высокоуровневая абстракция поверх RDD: под капотом он реализован как RDD объектов Row со схемой."
+    },
+    {
+        "id": 18,
+        "question": "Какой из следующих кодовых блоков возвращает DataFrame, содержащий только столбцы storeId и division из DataFrame storesDF?",
+        "options": [
+            "storesDF.select(\"storeId\").select(\"division\")",
+            "storesDF.select(storeId, division)",
+            "storesDF.select(\"storeId\", \"division\")",
+            "storesDF.select(col(\"storeId\", \"division\"))",
+            "storesDF.select(storeId).select(division)"
+        ],
+        "correctIndex": 2,
+        "explanation": "select() принимает имена столбцов как отдельные строковые аргументы. В B/E имена без кавычек (ошибка), в D неправильный вызов col() с двумя именами, в A два отдельных select() оставят только division."
+    },
+    {
+        "id": 19,
+        "question": "Какой из следующих блоков кода возвращает DataFrame, содержащий все столбцы из DataFrame storesDF, кроме столбцов sqft и customerSatisfaction?",
+        "options": [
+            "storesDF.drop(\"sqft\", \"customerSatisfaction\")",
+            "storesDF.select(\"storeId\", \"open\", \"openDate\", \"division\")",
+            "storesDF.select(-col(sqft), -col(customerSatisfaction))",
+            "storesDF.drop(sqft, customerSatisfaction)",
+            "storesDF.drop(col(sqft), col(customerSatisfaction))"
+        ],
+        "correctIndex": 0,
+        "explanation": "drop() принимает имена удаляемых столбцов в кавычках. B перечисляет оставшиеся столбцы (хрупко и не соответствует заданию), C/D/E используют имена без кавычек или некорректный синтаксис."
+    },
+    {
+        "id": 20,
+        "question": "В приведенном ниже блоке кода есть ошибка. Этот блок кода предназначен для возвращения DataFrame, содержащего только строки из DataFrame storesDF, где значение в столбце \"sqft\" меньше или равно 25 000. Предположим, что DataFrame storesDF — единственная определенная языковая переменная. Определите ошибку.\n\nstoresDF.filter(sqft <= 25000)",
+        "options": [
+            "Имя столбца sqft нужно взять в кавычки, например storesDF.filter(\"sqft\" <= 25000)",
+            "Имя столбца sqft нужно взять в кавычки и обернуть в функцию col(), например storesDF.filter(col(\"sqft\") <= 25000)",
+            "Знак <= в логическом условии внутри filter() нужно изменить на >=",
+            "Знак <= в логическом условии внутри filter() нужно изменить на >=",
+            "Имя столбца sqft нужно обернуть в функцию col() следующим образом: storesDF.filter(col(sqft) <= 25000)"
+        ],
+        "correctIndex": 1,
+        "explanation": "sqft без кавычек — неопределённая переменная Python. Нужен объект Column: col(\"sqft\"). Вариант E передаёт col(sqft) (тоже без кавычек) — это останется ошибкой."
+    },
+    {
+        "id": 21,
+        "question": "Приведенный ниже блок кода должен возвращать DataFrame, содержащий только строки из DataFrame storesDF, где значение в столбце sqft меньше или равно 25 000 ИЛИ значение в столбце customerSatisfaction больше или равно 30. Выберите ответ, который правильно заполняет пропущенные номера в блоке кода для выполнения этой задачи.\n\nstoresDF.__1__(__2__ __3__ __4__)",
+        "options": [
+            "1. filter, 2. (col(\"sqft\") <= 25000), 3. |, 4. (col(\"customerSatisfaction\") >= 30)",
+            "1. drop, 2. (col(sqft) <= 25000), 3. |, 4. (col(customerSatisfaction) >= 30)",
+            "1. filter, 2. col(\"sqft\") <= 25000, 3. |, 4. col(\"customerSatisfaction\") >= 30",
+            "1. filter, 2. col(\"sqft\") <= 25000, 3. or, 4. col(\"customerSatisfaction\") >= 30",
+            "1. filter, 2. (col(\"sqft\") <= 25000), 3. or, 4. (col(\"customerSatisfaction\") >= 30)"
+        ],
+        "correctIndex": 0,
+        "explanation": "В PySpark логическое ИЛИ — оператор |, а каждое условие обязательно берётся в скобки из-за приоритета операций. Ключевое слово or (D, E) не работает с объектами Column; в C нет скобок вокруг условий."
+    },
+    {
+        "id": 22,
+        "question": "Какая из следующих операций может быть использована для преобразования столбца DataFrame из одного типа в другой тип?",
+        "options": [
+            "col().cast()",
+            "convert()",
+            "castAs()",
+            "col().coerce()",
+            "col()"
+        ],
+        "correctIndex": 0,
+        "explanation": "Приведение типа выполняется методом cast() объекта Column: col(\"x\").cast(\"integer\"). Функций convert(), castAs(), coerce() в API нет."
+    },
+    {
+        "id": 23,
+        "question": "Какой из следующих блоков кода возвращает новый DataFrame с новым столбцом sqft100, который равен 1/100 от столбца sqft в DataFrame storesDF? Обратите внимание, что столбца sqft100 нет в исходном DataFrame storesDF.",
+        "options": [
+            "storesDF.withColumn(\"sqft100\", col(\"sqft\") * 100)",
+            "storesDF.withColumn(\"sqft100\", sqft / 100)",
+            "storesDF.withColumn(col(\"sqft100\"), col(\"sqft\") / 100)",
+            "storesDF.withColumn(\"sqft100\", col(\"sqft\") / 100)",
+            "storesDF.newColumn(\"sqft100\", sqft / 100)"
+        ],
+        "correctIndex": 3,
+        "explanation": "withColumn(имя, выражение): имя нового столбца — строка, значение — выражение над Column. A умножает на 100 (не делит), B/E используют sqft без col(), C ошибочно оборачивает имя в col()."
+    },
+    {
+        "id": 24,
+        "question": "Какой из следующих блоков кода возвращает новый DataFrame из DataFrame storesDF, где столбец numberOfManagers имеет постоянное целое значение 1?",
+        "options": [
+            "storesDF.withColumn(\"numberOfManagers\", col(1))",
+            "storesDF.withColumn(\"numberOfManagers\", 1)",
+            "storesDF.withColumn(\"numberOfManagers\", lit(1))",
+            "storesDF.withColumn(\"numberOfManagers\", lit(\"1\"))",
+            "storesDF.withColumn(\"numberOfManagers\", IntegerType(1))"
+        ],
+        "correctIndex": 2,
+        "explanation": "Литеральное (константное) значение задаётся функцией lit(). Просто 1 (B) не является Column; lit(\"1\") (D) даст строку, а не целое; col(1) и IntegerType(1) синтаксически неверны."
+    },
+    {
+        "id": 25,
+        "question": "В приведенном ниже блоке кода есть ошибка. Этот блок кода предназначен для создания нового DataFrame, в котором столбец storeCategory из DataFrame storesDF разделяется по символу подчеркивания на столбцы storeValueCategory и storeSizeCategory. Найдите ошибку.\n\n(storesDF.withColumn(\"storeValueCategory\", col(\"storeCategory\").split(\"_\")[0]).withColumn(\"storeSizeCategory\", col(\"storeCategory\").split(\"_\")[1]))",
+        "options": [
+            "Операция split() берется из импортированного объекта-функции. Она принимает строковый столбец и разделитель в качестве аргументов. Она не является методом объекта Column.",
+            "Операция split() берется из импортированного объекта-функции. Она принимает объект Column и разделитель в качестве аргументов. Она не является методом объекта Column.",
+            "Индексы 0 и 1 должны быть предоставлены в качестве вторых аргументов операции split(), а не индексировать результат",
+            "Индексные значения 0 и 1 неверны, они должны быть -1 и 2 соответственно",
+            "Операцию withColumn() нельзя вызывать дважды подряд"
+        ],
+        "correctIndex": 1,
+        "explanation": "Правильно: split(col(\"storeCategory\"), \"_\"). В коде split() вызван как метод col(\"...\").split(\"_\"), чего в API нет. Индексация результата [0]/[1] как раз допустима."
+    },
+    {
+        "id": 26,
+        "question": "Какую из следующих операций можно использовать для разделения столбца-массива на отдельную строку DataFrame для каждого элемента массива?",
+        "options": [
+            "extract()",
+            "split()",
+            "explode()",
+            "arrays_zip()",
+            "unpack()"
+        ],
+        "correctIndex": 2,
+        "explanation": "explode() создаёт по одной строке на каждый элемент массива. split() режет строку в массив, arrays_zip() объединяет массивы."
+    },
+    {
+        "id": 27,
+        "question": "Какой из следующих блоков кода возвращает новый DataFrame, где столбец storeCategory является версией столбца storeCategory из DataFrame storesDF в нижнем регистре? Предполагается, что DataFrame storesDF — единственная определенная языковая переменная.",
+        "options": [
+            "storesDF.withColumn(\"storeCategory\", lower(col(\"storeCategory\")))",
+            "storesDF.withColumn(\"storeCategory\", col(\"storeCategory\").lower())",
+            "storesDF.withColumn(\"storeCategory\", tolower(col(\"storeCategory\")))",
+            "storesDF.withColumn(\"storeCategory\", lower(\"storeCategory\"))",
+            "storesDF.withColumn(\"storeCategory\", lower(storeCategory))"
+        ],
+        "correctIndex": 0,
+        "explanation": "Функция lower() из модуля functions принимает Column: lower(col(\"storeCategory\")). lower() — не метод Column (B), функции tolower() нет (C), а в E имя без кавычек."
+    },
+    {
+        "id": 28,
+        "question": "В приведенном ниже блоке кода есть ошибка. Этот блок кода предназначен для создания нового DataFrame, где столбец division из DataFrame storesDF переименован в столбец state, а столбец managerName из DataFrame storesDF переименован в столбец managerFullName. Найдите ошибку.\n\n(storesDF.withColumnRenamed(\"state\", \"division\").withColumnRenamed(\"managerFullName\", \"managerName\"))",
+        "options": [
+            "Оба аргумента операции withColumnRenamed() должны быть обернуты в операцию col()",
+            "Операции withColumnRenamed() не должны вызываться дважды, и первый аргумент должен быть [\"state\", \"division\"], а второй аргумент должен быть [\"managerFullName\", \"managerName\"]",
+            "Старые столбцы нужно явно удалить",
+            "Первый аргумент операции withColumnRenamed() должен быть старым названием столбца, а второй аргумент — новым названием столбца",
+            "Операцию withColumnRenamed() следует заменить на withColumn()"
+        ],
+        "correctIndex": 3,
+        "explanation": "Сигнатура: withColumnRenamed(existing, new). В коде аргументы переставлены местами (\"state\", \"division\" вместо \"division\", \"state\"). Двойной вызов и сами имена корректны — дело именно в порядке аргументов."
+    },
+    {
+        "id": 29,
+        "question": "Какой из следующих блоков кода возвращает DataFrame, из которого были удалены строки DataFrame storesDF, содержащие пропущенные значения в каждом столбце?",
+        "options": [
+            "storesDF.na.drop(\"all\")",
+            "storesDF.na.drop(\"all\", subset=\"sqft\")",
+            "storesDF.dropna()",
+            "storesDF.na.drop()",
+            "storesDF.na.drop(\"all\")"
+        ],
+        "correctIndex": 4,
+        "explanation": "na.drop(\"how\") с how=\"all\" удаляет строку, только если ВСЕ её значения пустые. na.drop() (D) по умолчанию how=\"any\" — удалит строку с любым пропуском. na.drop(A) и subset=\"sqft\"(B) не соответствуют заданию."
+    },
+    {
+        "id": 30,
+        "question": "Какая из следующих операций не возвращает DataFrame, где каждая строка уникальна?",
+        "options": [
+            "DataFrame.distinct()",
+            "DataFrame.drop_duplicates(subset=None)",
+            "DataFrame.drop_duplicates()",
+            "DataFrame.dropDuplicates()",
+            "DataFrame.drop_duplicates(subset=\"all\")"
+        ],
+        "correctIndex": 4,
+        "explanation": "subset ожидает список имён столбцов. \"all\" будет воспринят как имя несуществующего столбца (или перебор по символам) — корректного удаления дубликатов не произойдёт. distinct(), dropDuplicates(), drop_duplicates() (с None или без аргументов) работают."
+    },
+    {
+        "id": 31,
+        "question": "Какой из следующих блоков кода не всегда будет возвращать точное число различных значений в столбце division?",
+        "options": [
+            "storesDF.agg(approx_count_distinct(col(\"division\")).alias(\"divisionDistinct\"))",
+            "storesDF.agg(approx_count_distinct(col(\"division\"), 0).alias(\"divisionDistinct\"))",
+            "storesDF.agg(countDistinct(col(\"division\")).alias(\"divisionDistinct\"))",
+            "storesDF.select(\"division\").dropDuplicates().count()",
+            "storesDF.select(\"division\").distinct().count()"
+        ],
+        "correctIndex": 0,
+        "explanation": "approx_count_distinct по умолчанию использует приближённый алгоритм (HyperLogLog) с погрешностью ~5%, поэтому точное значение не гарантировано. countDistinct(), distinct().count() и dropDuplicates().count() дают точный результат."
+    },
+    {
+        "id": 32,
+        "question": "Какой из следующих блоков кода должен вернуть новый DataFrame со средним значением столбца sqft из DataFrame storesDF в столбце sqftMean? Выберите ответ, который правильно заполняет пропуски в блоке кода для выполнения этой задачи.\n\nstoresDF.__1__(__2__(__3__).alias(\"sqftMean\"))",
+        "options": [
+            "1. agg, 2. mean, 3. col(\"sqft\")",
+            "1. mean, 2. col, 3. \"sqft\"",
+            "1. withColumn, 2. mean, 3. col(\"sqft\")",
+            "1. agg, 2. mean, 3. \"sqft\"",
+            "1. agg, 2. average, 3. col(\"sqft\")"
+        ],
+        "correctIndex": 0,
+        "explanation": "Агрегат среднего: agg(mean(col(\"sqft\")).alias(\"sqftMean\")). withColumn (C) не агрегирует, average (E) такой функции нет, mean как самостоятельный метод DataFrame (B) не используется."
+    },
+    {
+        "id": 33,
+        "question": "Какой из следующих блоков кода возвращает количество строк в DataFrame storesDF?",
+        "options": [
+            "storesDF.withColumn(\"numberOfRows\", count())",
+            "storesDF.withColumn(count().alias(\"numberOfRows\"))",
+            "storesDF.countDistinct()",
+            "storesDF.count()",
+            "storesDF.agg(count())"
+        ],
+        "correctIndex": 3,
+        "explanation": "count() на DataFrame — действие, возвращающее число строк. withColumn(\"...\", count()) и agg(count()) без groupBy/alias не дают искомого числа строк."
+    },
+    {
+        "id": 34,
+        "question": "Какой из следующих блоков кода возвращает сумму значений в столбце sqft в DataFrame storesDF, сгруппированных по отличительному значению в столбце division?",
+        "options": [
+            "storesDF.groupBy.agg(sum(col(\"sqft\")))",
+            "storesDF.groupBy(\"division\").agg(sum())",
+            "storesDF.agg(groupBy(\"division\").sum(col(\"sqft\")))",
+            "storesDF.groupby.agg(sum(col(\"sqft\")))",
+            "storesDF.groupBy(\"division\").agg(sum(col(\"sqft\")))"
+        ],
+        "correctIndex": 4,
+        "explanation": "Правильная цепочка: groupBy(\"division\") возвращает GroupedData, к которому применяется agg(sum(col(\"sqft\"))). groupBy без аргумента (A) и groupby как свойство (D) неверны."
+    },
+    {
+        "id": 35,
+        "question": "Какой из следующих блоков кода возвращает DataFrame, содержащий сводную статистику только для столбца sqft в DataFrame storesDF?",
+        "options": [
+            "storesDF.summary(\"mean\")",
+            "storesDF.describe(\"sqft\")",
+            "storesDF.summary(col(\"sqft\"))",
+            "storesDF.describeColumn(\"sqft\")",
+            "storesDF.summary()"
+        ],
+        "correctIndex": 1,
+        "explanation": "describe(\"sqft\") считает count/mean/stddev/min/max для указанного столбца. summary(col(...)) и describeColumn() — некорректный синтаксис; summary() без аргумента берёт все столбцы."
+    },
+    {
+        "id": 36,
+        "question": "Какую из следующих операций можно использовать для сортировки строк DataFrame?",
+        "options": [
+            "sort() и orderBy()",
+            "orderby()",
+            "sort() и orderby()",
+            "orderBy()",
+            "sort()"
+        ],
+        "correctIndex": 0,
+        "explanation": "В API DataFrame есть оба метода — sort() и orderBy() (они синонимы). Имена orderby (нижний регистр) не существуют."
+    },
+    {
+        "id": 37,
+        "question": "Блок кода, показанный ниже, содержит ошибку. Блок кода предназначен для возврата 15-процентной выборки строк из DataFrame storesDF без замены. Определите, в чем заключается ошибка.\n\nstoresDF.sample(True, fraction=0.15)",
+        "options": [
+            "Для параметра seed не указан аргумент",
+            "Для параметра withReplacement не указан аргумент",
+            "Операция sample() не делает выборку без замены, вместо нее следует использовать sampleby()",
+            "Операция sample() не является воспроизводимой",
+            "Первый аргумент True устанавливает выборку с заменой"
+        ],
+        "correctIndex": 4,
+        "explanation": "Сигнатура: sample(withReplacement, fraction, seed). True означает выборку С возвращением; для выборки без замены нужен False. Параметр seed необязателен, так что проблема именно в первом аргументе."
+    },
+    {
+        "id": 38,
+        "question": "Какую из следующих операций можно использовать для возврата первых n строк из DataFrame?",
+        "options": [
+            "DataFrame.n()",
+            "DataFrame.take(n)",
+            "DataFrame.head",
+            "DataFrame.show(n)",
+            "DataFrame.collect(n)"
+        ],
+        "correctIndex": 1,
+        "explanation": "take(n) возвращает первые n строк (список Row). show(n) печатает, но не возвращает; head без n даёт одну строку; collect(n) такой сигнатуры нет; метода n() не существует."
+    },
+    {
+        "id": 39,
+        "question": "Какой из следующих блоков кода должен извлечь значение столбца sqft из первой строки DataFrame storesDF. Выберите ответ, который правильно заполняет пропуски в блоке кода для выполнения этой задачи.\n\n__1__.__2__.__3__",
+        "options": [
+            "1. storesDF, 2. first, 3. col(\"sqft\")",
+            "1. storesDF, 2. first, 3. sqft",
+            "1. storesDF, 2. first, 3. [\"sqft\"]",
+            "1. storesDF, 2. first(), 3. sqft",
+            "1. storesDF, 2. first(), 3. col(\"sqft\")"
+        ],
+        "correctIndex": 3,
+        "explanation": "first() — действие, возвращающее объект Row; к его полю обращаются как к атрибуту: .sqft. first без скобок (A, B, C) — это сам метод, а не результат; col(\"sqft\") к Row не применяется."
+    },
+    {
+        "id": 40,
+        "question": "Какая из следующих строк кода выводит схему (структуру) DataFrame?",
+        "options": [
+            "print(storesDF)",
+            "storesDF.schema",
+            "print(storesDF.schema())",
+            "DataFrame.printSchema()",
+            "DataFrame.schema()"
+        ],
+        "correctIndex": 3,
+        "explanation": "printSchema() печатает древовидную структуру схемы. schema — это свойство (без скобок), оно возвращает объект, но не печатает; schema() со скобками — ошибка; print(storesDF) выводит лишь сигнатуру столбцов."
+    },
+    {
+        "id": 41,
+        "question": "В каком порядке нужно выполнять приведенные ниже строки кода, чтобы создать и зарегистрировать SQL UDF с именем \"ASSESS_PERFORMANCE\" с помощью Python-функции assessPerformance и применить ее к столбцу customerSatisfaction в таблице stores?\n\nВарианты кода:\n1. spark.udf.register(\"ASSESS_PERFORMANCE\", assessPerformance)\n2. spark.sql(\"SELECT customerSatisfaction, assessPerformance(customerSatisfaction) AS result FROM stores\")\n3. spark.udf.register(assessPerformance, \"ASSESS_PERFORMANCE\")\n4. spark.sql(\"SELECT customerSatisfaction, ASSESS_PERFORMANCE(customerSatisfaction) AS result FROM stores\")",
+        "options": [
+            "3, 4",
+            "1, 4",
+            "3, 2",
+            "2",
+            "1, 2"
+        ],
+        "correctIndex": 1,
+        "explanation": "Сначала регистрируем UDF: spark.udf.register(\"ASSESS_PERFORMANCE\", assessPerformance) — порядок аргументов (имя, функция). Затем вызываем через SQL по зарегистрированному имени ASSESS_PERFORMANCE (строка 4)."
+    },
+    {
+        "id": 42,
+        "question": "В каком порядке нужно выполнять приведенные ниже строки кода, чтобы создать Python UDF assessPerformanceUDF() с помощью Python-функции assessPerformance, возвращающей целое число, и применить ее к столбцу customerSatisfaction в DataFrame storesDF?\n\nСтроки кода:\n1. assessPerformanceUDF = udf(assessPerformance, IntegerType)\n2. assessPerformanceUDF = spark.register.udf(\"ASSESS_PERFORMANCE\", assessPerformance)\n3. assessPerformanceUDF = udf(assessPerformance, IntegerType())\n4. storesDF.withColumn(\"result\", assessPerformanceUDF(col(\"customerSatisfaction\")))\n5. storesDF.withColumn(\"result\", assessPerformance(col(\"customerSatisfaction\")))\n6. storesDF.withColumn(\"result\", ASSESS_PERFORMANCE(col(\"customerSatisfaction\")))",
+        "options": [
+            "3, 4",
+            "2, 6",
+            "3, 5",
+            "1, 4",
+            "2, 5"
+        ],
+        "correctIndex": 0,
+        "explanation": "udf(assessPerformance, IntegerType()) — тип возврата создаётся как ЭКЗЕМПЛЯР со скобками (строка 3, в отличие от строки 1). Затем применяем UDF в withColumn (строка 4). Строка 5 вызывает обычную функцию, а не UDF."
+    },
+    {
+        "id": 43,
+        "question": "Какая из следующих операций позволяет выполнить SQL-запрос к таблице?",
+        "options": [
+            "spark.query()",
+            "DataFrame.sql()",
+            "spark.sql()",
+            "DataFrame.createOrReplaceTempView()",
+            "DataFrame.createTempView()"
+        ],
+        "correctIndex": 2,
+        "explanation": "spark.sql(\"...\") выполняет SQL-запрос и возвращает DataFrame. createOrReplaceTempView()/createTempView() лишь регистрируют таблицу, но сами запрос не выполняют."
+    },
+    {
+        "id": 44,
+        "question": "Какой из следующих блоков кода создает одностолбчатый DataFrame из Python-списка years, состоящего из целых чисел?",
+        "options": [
+            "spark.createDataFrame([years], IntegerType())",
+            "spark.createDataFrame(years, IntegerType())",
+            "spark.DataFrame(years, IntegerType())",
+            "spark.createDataFrame(years)",
+            "spark.createDataFrame(years, IntegerType)"
+        ],
+        "correctIndex": 1,
+        "explanation": "createDataFrame(данные, схема): для списка целых нужна схема IntegerType() как ЭКЗЕМПЛЯР (со скобками). Без скобок (E) — передаётся класс, а не тип; без схемы (D) Spark не выведет тип из простого списка чисел."
+    },
+    {
+        "id": 45,
+        "question": "Какую из следующих операций можно использовать для кэширования DataFrame только в памяти Spark, предполагая, что значения по умолчанию могут быть обновлены?",
+        "options": [
+            "DataFrame.clearCache()",
+            "DataFrame.storageLevel",
+            "StorageLevel",
+            "DataFrame.persist()",
+            "DataFrame.cache()"
+        ],
+        "correctIndex": 3,
+        "explanation": "persist() принимает StorageLevel, например MEMORY_ONLY, что позволяет хранить данные ТОЛЬКО в памяти. cache() жёстко использует MEMORY_AND_DISK и уровень не настраивается."
+    },
+    {
+        "id": 46,
+        "question": "В приведенном ниже блоке кода есть ошибка. Этот блок кода предназначен для возврата нового 4-партиционного DataFrame из 8-партиционного DataFrame storesDF без перемешивания данных (shuffle). Найдите ошибку.\n\nstoresDF.repartition(4)",
+        "options": [
+            "Операция repartition будет работать только в том случае, если DataFrame был кэширован в памяти",
+            "Операция repartition требует столбец, по которому выполняется разбиение, а не только количество разделов",
+            "Количество результирующих разделов 4 недостижимо для 8-раздельного DataFrame",
+            "Операция repartition вызвала полное перемешивание (shuffle). Вместо нее следует использовать операцию coalesce()",
+            "Операция repartition не может гарантировать количество разделов результата"
+        ],
+        "correctIndex": 3,
+        "explanation": "repartition() всегда делает полный shuffle. Для УМЕНЬШЕНИЯ числа разделов без перемешивания применяют coalesce(4), который просто объединяет существующие разделы."
+    },
+    {
+        "id": 47,
+        "question": "Какой из следующих блоков кода всегда вернет новый 12-партиционный DataFrame из 8-партиционного DataFrame storesDF?",
+        "options": [
+            "storesDF.coalesce(12)",
+            "storesDF.repartition()",
+            "storesDF.repartition(12)",
+            "storesDF.coalesce()",
+            "storesDF.coalesce(12, \"storeId\")"
+        ],
+        "correctIndex": 2,
+        "explanation": "Увеличить число разделов можно только repartition() (он делает полный shuffle). coalesce() умеет лишь уменьшать число разделов и не сможет создать 12 из 8."
+    },
+    {
+        "id": 48,
+        "question": "Какое из следующих свойств конфигурации Spark определяет количество разделов, используемых в широких преобразованиях, таких как join()?",
+        "options": [
+            "spark.sql.shuffle.partitions",
+            "spark.shuffle.partitions",
+            "spark.shuffle.io.maxRetries",
+            "spark.shuffle.file.buffer",
+            "spark.default.parallelism"
+        ],
+        "correctIndex": 0,
+        "explanation": "spark.sql.shuffle.partitions (по умолчанию 200) задаёт число разделов после перемешивания в операциях SQL/DataFrame, таких как join и groupBy. spark.default.parallelism относится к RDD."
+    },
+    {
+        "id": 49,
+        "question": "В каком порядке нужно выполнять приведенные ниже строки кода, чтобы вернуть DataFrame, содержащий столбец openDateString — строковое представление даты в формате Java SimpleDateFormat?\n\nПримечание: столбец openDate имеет целочисленный тип и представляет дату в формате UNIX-эпохи (количество секунд с полуночи 1 января 1970 года).\n\nВарианты кода:\n1. storesDF.withColumn(\"openDateString\", from_unixtime(col(\"openDate\"), simpleDateFormat))\n2. simpleDateFormat = \"EEEE, MMM d, yyyy h:mm a\"\n3. storesDF.withColumn(\"openDateString\", from_unixtime(col(\"openDate\"), SimpleDateFormat()))\n4. storesDF.withColumn(\"openDateString\", date_format(col(\"openDate\"), simpleDateFormat))\n5. storesDF.withColumn(\"openDateString\", date_format(col(\"openDate\"), SimpleDateFormat()))\n6. simpleDateFormat = \"wd, MMM d, yyyy h:mm a\"",
+        "options": [
+            "2, 3",
+            "2, 1",
+            "6, 5",
+            "2, 4",
+            "6, 1"
+        ],
+        "correctIndex": 1,
+        "explanation": "Сначала задаём корректный шаблон формата (строка 2: \"EEEE, MMM d, yyyy h:mm a\"). Затем из UNIX-времени получаем строку через from_unixtime(col(\"openDate\"), simpleDateFormat) (строка 1). date_format ожидает дату/время, а не целое."
+    },
+    {
+        "id": 50,
+        "question": "Какой из следующих блоков кода возвращает DataFrame, содержащий столбец month, целочисленное представление месяца из столбца openDate из DataFrame storesDF?\n\nПримечание: столбец openDate имеет целочисленный тип и представляет дату в формате UNIX-эпохи (количество секунд с полуночи 1 января 1970 года).",
+        "options": [
+            "storesDF.withColumn(\"month\", getMonth(col(\"openDate\")))",
+            "storesDF.withColumn(\"openTimestamp\", col(\"openDate\").cast(\"Timestamp\")).withColumn(\"month\", month(col(\"openTimestamp\")))",
+            "storesDF.withColumn(\"openDateFormat\", col(\"openDate\").cast(\"Date\")).withColumn(\"month\", month(col(\"openDateFormat\")))",
+            "storesDF.withColumn(\"month\", substr(col(\"openDate\"), 4, 2))",
+            "storesDF.withColumn(\"month\", month(col(\"openDate\")))"
+        ],
+        "correctIndex": 1,
+        "explanation": "Функция month() работает с типами date/timestamp, а не с целым. Поэтому сначала приводим openDate к Timestamp (col(\"openDate\").cast(\"Timestamp\")), и только потом извлекаем месяц через month()."
+    },
+    {
+        "id": 51,
+        "question": "Какая из следующих операций выполняет внутренний join двух DataFrames?",
+        "options": [
+            "DataFrame.innerJoin()",
+            "DataFrame.join()",
+            "join() (Автономная самописная функция)",
+            "DataFrame.merge()",
+            "DataFrame.crossJoin()"
+        ],
+        "correctIndex": 1,
+        "explanation": "join() по умолчанию выполняет inner join (how=\"inner\"). innerJoin() и merge() в Spark DataFrame API не существуют; crossJoin() даёт декартово произведение."
+    },
+    {
+        "id": 52,
+        "question": "Какой из следующих блоков кода возвращает новый DataFrame, являющийся результатом внешнего соединения между DataFrame storesDF и DataFrame employeesDF по столбцу storeId?",
+        "options": [
+            "storesDF.join(employeesDF, \"storeId\", \"outer\")",
+            "storesDF.join(employeesDF, \"storeId\")",
+            "storesDF.join(employeesDF, \"outer\", col(\"storeId\"))",
+            "storesDF.join(employeesDF, \"outer\", storesDF.storeId == employeesDF.storeId)",
+            "storesDF.merge(employeesDF, \"outer\", col(\"storeId\"))"
+        ],
+        "correctIndex": 0,
+        "explanation": "Сигнатура: join(other, on, how). Здесь on=\"storeId\", how=\"outer\". В остальных вариантах аргументы переставлены или используется несуществующий merge()."
+    },
+    {
+        "id": 53,
+        "question": "В приведенном ниже блоке кода есть ошибка. Этот блок кода предназначен для возврата нового DataFrame, являющегося результатом внутреннего соединения между DataFrame storesDF и DataFrame employeesDF по столбцам storeId и employeeId, которые присутствуют в обоих DataFrames. Найдите ошибку.\n\nstoresDF.join(employeesDF, [col(\"storeId\"), col(\"employeeId\")])",
+        "options": [
+            "Операция join() является отдельной функцией, а не методом DataFrame. Операцию join() следует вызывать так, чтобы первыми двумя аргументами были storesDF и employeesDF.",
+            "Для join() должен быть третий аргумент, поскольку значение по умолчанию параметра how не является \"inner\"",
+            "Аргументы col(\"storeId\") и col(\"employeeId\") не должны быть отдельными элементами списка — их нужно сравнить друг с другом, например col(\"storeId\") == col(\"employeeId\")",
+            "Операции DataFrame.join() не существует, вместо нее следует использовать DataFrame.merge()",
+            "Ссылки на \"storeId\" и \"employeeId\" не должны находиться внутри функции col() — удаление функции col() должно привести к успешному join"
+        ],
+        "correctIndex": 4,
+        "explanation": "При соединении по столбцам с одинаковыми именами в обоих DataFrame передаётся список СТРОК-имён: [\"storeId\", \"employeeId\"]. Обёртка col() в этом сокращённом equi-join не подходит — её нужно убрать."
+    },
+    {
+        "id": 54,
+        "question": "Какое из следующих свойств Spark используется для настройки автоматической трансляции DataFrame без использования операции broadcast()?",
+        "options": [
+            "spark.sql.autoBroadcastJoinThreshold",
+            "spark.sql.broadcastTimeout",
+            "spark.broadcast.blockSize",
+            "spark.broadcast.compress",
+            "spark.executor.memoryOverhead"
+        ],
+        "correctIndex": 0,
+        "explanation": "Если размер таблицы меньше autoBroadcastJoinThreshold (по умолчанию 10 МБ), Spark автоматически выполняет broadcast join без явного вызова broadcast(). broadcastTimeout задаёт лишь тайм-аут."
+    },
+    {
+        "id": 55,
+        "question": "Какой из вариантов заполнения пропусков в следующем блоке кода позволит получить результат кросс-соединения (полного соединения) между DataFrame storesDF и DataFrame employeesDF?\n\n__1__.__2__(__3__)",
+        "options": [
+            "1. storesDF, 2. crossJoin, 3. employeesDF, \"storeId\"",
+            "1. storesDF, 2. join, 3. employeesDF, \"cross\"",
+            "1. storesDF, 2. crossJoin, 3. employeesDF, \"storeId\"",
+            "1. storesDF, 2. join, 3. employeesDF, \"storeId\", \"cross\"",
+            "1. storesDF, 2. crossJoin, 3. employeesDF"
+        ],
+        "correctIndex": 4,
+        "explanation": "Декартово произведение даёт метод crossJoin(other) — без условия и без ключа соединения. Передавать \"storeId\" или \"cross\" в него не нужно."
+    },
+    {
+        "id": 56,
+        "question": "Какая из следующих операций выполняет поэлементное объединение (union) двух DataFrames?",
+        "options": [
+            "concat() (Отдельная функция)",
+            "unionAll() (Отдельная функция)",
+            "union() (Отдельная функция)",
+            "DataFrame.unionByName()",
+            "DataFrame.union()"
+        ],
+        "correctIndex": 4,
+        "explanation": "union() объединяет строки двух DataFrame по позиции столбцов. Это метод DataFrame, а не отдельная функция. unionByName() объединяет по именам столбцов, но вопрос про поэлементное (по позиции) объединение."
+    },
+    {
+        "id": 57,
+        "question": "Какой из следующих блоков кода записывает DataFrame storesDF в файл по пути filePath в формате parquet?",
+        "options": [
+            "storesDF.write.option(\"parquet\").path(filePath)",
+            "storesDF.write.path(filePath)",
+            "storesDF.write().parquet(filePath)",
+            "storesDF.write(filePath)",
+            "storesDF.write.parquet(filePath)"
+        ],
+        "correctIndex": 4,
+        "explanation": "write — это свойство (без скобок), возвращающее DataFrameWriter, у которого есть метод parquet(path). write() со скобками (C) и метода path() (A, B) не существует."
+    },
+    {
+        "id": 58,
+        "question": "В приведенном ниже блоке кода есть ошибка. Этот блок кода предназначен для записи DataFrame storesDF в файл по пути filePath в формате parquet с разбиением по значениям в столбце division. Найдите ошибку.\n\nstoresDF.write.repartition(\"division\").parquet(filePath)",
+        "options": [
+            "Аргумент для операции repartition() должен быть обернут в функцию col(), чтобы вернуть объект Column",
+            "Для DataFrameWriter не существует операции parquet(), вместо нее следует использовать операцию save()",
+            "Для DataFrameWriter не существует операции repartition(), вместо нее следует использовать операцию partitionBy()",
+            "storesDF.write является операцией, за ней должны следовать круглые скобки, чтобы вернуть DataFrameWriter",
+            "Необходимо вызвать операцию mode(), чтобы указать, что эта запись не должна перезаписывать существующие файлы"
+        ],
+        "correctIndex": 2,
+        "explanation": "Разбиение при ЗАПИСИ задаётся методом partitionBy(\"division\") у DataFrameWriter. repartition() — это метод DataFrame (меняет число разделов в памяти), а не writer'а, поэтому код упадёт с ошибкой."
+    },
+    {
+        "id": 59,
+        "question": "Какой из следующих блоков кода читает parquet-файл по указанному пути filePath в DataFrame?",
+        "options": [
+            "spark.read().parquet(filePath)",
+            "spark.read().path(filePath, source=\"parquet\")",
+            "spark.read.path(filePath, source=\"parquet\")",
+            "spark.read.parquet(filePath)",
+            "spark.read().path(filePath)"
+        ],
+        "correctIndex": 3,
+        "explanation": "read — свойство (без скобок), возвращающее DataFrameReader, у которого есть метод parquet(path). read() со скобками и метод path() — неверны."
+    },
+    {
+        "id": 60,
+        "question": "Какой из следующих блоков кода читает JSON-файл по указанному пути filePath в DataFrame с указанной схемой schema?",
+        "options": [
+            "spark.read().schema(schema).format(json).load(filePath)",
+            "spark.read().schema(schema).format(\"json\").load(filePath)",
+            "spark.read.schema(\"schema\").format(\"json\").load(filePath)",
+            "spark.read.schema(\"schema\").format(\"json\").load(filePath)",
+            "spark.read.schema(schema).format(\"json\").load(filePath)"
+        ],
+        "correctIndex": 4,
+        "explanation": "read — свойство (без скобок); schema принимает ОБЪЕКТ схемы (переменную schema, а не строку \"schema\"); format(\"json\") — в кавычках; load(filePath) загружает данные."
+    }
+]
